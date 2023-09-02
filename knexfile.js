@@ -42,19 +42,24 @@ module.exports = {
     },
   },
 
-  production: {
+  development: {
     client: "postgresql",
     connection: {
-      database: process.env.DATABASE,
-      user: process.env.USER,
+      host: process.env.HOST,
+      port: process.env.PORT,
+      user: process.env.RDSUSER,
       password: process.env.PASSWORD,
+      database: process.env.DATABASE,
     },
-    pool: {
-      min: 2,
-      max: 10,
-    },
+    debug: true,
     migrations: {
-      tableName: "knex_migrations",
-    },
+      onError: function (error, _obj, _qb) {
+        if (error.code === "ETIMEOUT") {
+          console.error("Connection timeout occured:", error)
+        } else {
+          console.error("Error occurred during migration:", error)
+        }
+      }
+    }
   },
 };
