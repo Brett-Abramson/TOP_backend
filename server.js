@@ -1,5 +1,5 @@
 const express = require("express");
-const { Client } = require("pg");
+const { Pool } = require("pg");
 
 // Create a new Express application
 const app = express();
@@ -15,8 +15,8 @@ require("dotenv").config();
 // Define the port the client server will run on.
 const port = process.env.USERPORT || 3030;
 
-// Create a new PostgreSQL client
-const client = new Client({
+// Create a new PostgreSQL pool
+const pool = new Pool({
   user: process.env.RDSUSER,
   host: process.env.HOST,
   database: process.env.DATABASE,
@@ -25,7 +25,7 @@ const client = new Client({
 });
 
 // Connect to the PostgreSQL database
-client
+pool
   .connect()
   .then(() => {
     console.log("Connected to the database");
@@ -50,7 +50,7 @@ app.get("/partners", async (req, res) => {
   try {
     // Retrieve the partners from the database
     const query = "SELECT * FROM partners";
-    const result = await client.query(query);
+    const result = await pool.query(query);
     const partners = result.rows;
     res.json(partners);
   } catch (err) {
@@ -98,7 +98,7 @@ app.post("/partners", async (req, res) => {
       social_sharing_message,
       color_theme,
     ];
-    const result = await client.query(query, values);
+    const result = await pool.query(query, values);
     const newUser = result.rows[0];
 
     // Send the newly created user back as JSON
@@ -114,7 +114,7 @@ app.get("/users", async (req, res) => {
   try {
     // Retrieve the users from the database
     const query = "SELECT * FROM users";
-    const result = await client.query(query);
+    const result = await pool.query(query);
     const users = result.rows;
     res.json(users);
   } catch (err) {
@@ -169,7 +169,7 @@ app.post("/users", async (req, res) => {
       email,
       phone_number,
     ];
-    const result = await client.query(query, values);
+    const result = await pool.query(query, values);
     const newUser = result.rows[0];
 
     res.status(201).json(newUser);
@@ -177,6 +177,15 @@ app.post("/users", async (req, res) => {
     console.error("Error creating new user!", err);
     res.status(500).json({ message: "Error creating new user!" });
   }
+});
+
+// Gracefully shutdown database connections
+process.on("SIGINT", () => {
+  console.log("Received SIGINT. Closing database connections...");
+  pool.end(() => {
+    console.log("Database connections closed.");
+    process.exit(0);
+  });
 });
 
 // Start the server, listening on the specified port.
