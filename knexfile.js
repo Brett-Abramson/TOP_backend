@@ -14,7 +14,7 @@ module.exports = {
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
       ssl: {
-        ca: fs.readFileSync("us-east-1-bundle.p7b")
+        ca: fs.readFileSync(process.env.CAPATH)
       }
     },
     debug: true,
@@ -54,7 +54,7 @@ module.exports = {
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
       ssl: {
-        ca: fs.readFileSync("us-east-1-bundle.p7b")
+        ca: fs.readFileSync(process.env.CAPATH)
       }
     },
     debug: true,
