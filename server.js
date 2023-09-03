@@ -13,7 +13,7 @@ app.use(cors());
 require("dotenv").config();
 
 // Define the port the client server will run on.
-const port = process.env.USERPORT || 3030;
+const port = process.env.PORT || 3030;
 
 // Create a new PostgreSQL pool
 const pool = new Pool({
@@ -21,7 +21,7 @@ const pool = new Pool({
   host: process.env.HOST,
   database: process.env.DATABASE,
   password: process.env.PASSWORD,
-  port: process.env.PORT,
+  port: process.env.DBPORT,
 });
 
 // Connect to the PostgreSQL database
