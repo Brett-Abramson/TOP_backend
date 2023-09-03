@@ -13,6 +13,9 @@ module.exports = {
       user: process.env.RDSUSER,
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
+      ssl: {
+        ca: fs.readFileSync("us-east-1-bundle.p7b")
+      }
     },
     debug: true,
     migrations: {
@@ -50,6 +53,9 @@ module.exports = {
       user: process.env.RDSUSER,
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
+      ssl: {
+        ca: fs.readFileSync("us-east-1-bundle.p7b")
+      }
     },
     debug: true,
     migrations: {
